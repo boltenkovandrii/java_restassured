@@ -25,7 +25,7 @@ import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class ListProjectIssuesTest extends BaseTest {
+class ListProjectIssuesTest extends BaseTest {
 
     /*
         Tests for getting list of project issues with focus on happy path

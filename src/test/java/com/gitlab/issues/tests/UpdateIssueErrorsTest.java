@@ -23,7 +23,7 @@ import static com.gitlab.issues.base.IssuesAPI.updateIssueRaw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class UpdateIssueErrorsTest extends BaseTest {
+class UpdateIssueErrorsTest extends BaseTest {
 
     /*
         Basic tests for issue update logic with focus on error\negative scenarios

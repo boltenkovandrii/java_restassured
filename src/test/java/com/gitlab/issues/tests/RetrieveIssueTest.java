@@ -18,7 +18,7 @@ import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class RetrieveIssueTest extends BaseTest {
+class RetrieveIssueTest extends BaseTest {
 
     /*
         Basic tests for issue retrieval logic both positive and negative scenarios

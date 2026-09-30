@@ -21,7 +21,7 @@ import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class ListIssuesPaginationTest extends BaseTest {
+class ListIssuesPaginationTest extends BaseTest {
 
     /*
         Tests for getting list of project issues with focus on pagination, both positive and negative scenarios.

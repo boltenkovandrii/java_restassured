@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -26,7 +27,7 @@ import static com.gitlab.issues.base.IssuesAPI.updateIssueRaw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class UpdateIssueTest extends BaseTest {
+class UpdateIssueTest extends BaseTest {
 
     /*
         Basic tests for issue creation logic with focus on happy path.
@@ -463,7 +464,7 @@ public class UpdateIssueTest extends BaseTest {
                 new IssueUpdateRequest().setSeverity(severity));
 
         // Check that the issue is updated correctly
-        assertThat(updated.severity()).isEqualTo(severity.toUpperCase());
+        assertThat(updated.severity()).isEqualTo(severity.toUpperCase(Locale.ENGLISH));
 
         //cleanup
         deleteIssue(created.iid());

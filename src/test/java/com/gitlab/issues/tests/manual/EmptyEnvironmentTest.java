@@ -20,7 +20,7 @@ import static com.gitlab.issues.base.IssuesAPI.deleteIssueRaw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("EmptyEnvironmentTests")
-public class EmptyEnvironmentTest extends BaseTest {
+class EmptyEnvironmentTest extends BaseTest {
 
     /*
      * These tests require the project to contain no issues.
@@ -33,7 +33,7 @@ public class EmptyEnvironmentTest extends BaseTest {
 
     @Test
     @DisplayName("EmptyEnv1: Retrieve issue list for an empty environment")
-    public void getIssuesEmptyEnvTest() {
+    void getIssuesEmptyEnvTest() {
         List<Issue> issues = getIssues();
         assertThat(issues).as("Check that issues  response is not null").isNotNull();
         assertThat(issues).as("Check the issue id").hasSize(0);
@@ -41,21 +41,21 @@ public class EmptyEnvironmentTest extends BaseTest {
 
     @Test
     @DisplayName("EmptyEnv2: Attempt to retrieve issue for an empty environment")
-    public void getIssueEmptyEnvTest() {
+    void getIssueEmptyEnvTest() {
         Response response = getIssueRaw(PROJECT_ID, 1);
         assertMessage(response, 404, NOT_FOUND_MESSAGE);
     }
 
     @Test
     @DisplayName("EmptyEnv3: Attempt to delete issue for an empty environment")
-    public void deleteIssueEmptyEnvTest() {
+    void deleteIssueEmptyEnvTest() {
         Response response = deleteIssueRaw(PROJECT_ID, 1);
         assertMessage(response, 404, ISSUE_NOT_FOUND_MESSAGE);
     }
 
     @Test
     @DisplayName("EmptyEnv4: Attempt to update issue for an empty environment")
-    public void updateIssueEmptyEnvTest() {
+    void updateIssueEmptyEnvTest() {
 
         IssueUpdateRequest updateRequest = new IssueUpdateRequest()
                 .setTitle(generateUniqueIssueTitle("Update for empty env test"))
@@ -68,7 +68,7 @@ public class EmptyEnvironmentTest extends BaseTest {
 
     @Test
     @DisplayName("EmptyEnv5: Create issue for an empty environment")
-    public void createIssueEmptyEnvTest() {
+    void createIssueEmptyEnvTest() {
         IssueCreateRequest createRequest = new IssueCreateRequest(generateUniqueIssueTitle("Create for empty env test"))
                 .setDescription("Create for empty env test")
                 .setLabels("self-check");

@@ -16,7 +16,7 @@ import static com.gitlab.issues.base.IssuesAPI.getIssuesRaw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class ListIssuesErrorsTest extends BaseTest {
+class ListIssuesErrorsTest extends BaseTest {
 
     /*
         Tests for getting list of project issues with focus on error scenarios

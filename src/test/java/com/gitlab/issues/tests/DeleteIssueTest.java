@@ -15,7 +15,7 @@ import static com.gitlab.issues.base.IssuesAPI.deleteIssueRaw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class DeleteIssueTest extends BaseTest {
+class DeleteIssueTest extends BaseTest {
 
     /*
         Basic tests for issue deletion logic both positive and negative scenarios

@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.config.LogConfig.logConfig;
@@ -20,8 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 
-// This class provides a base for making REST API calls with retry logic for GET requests.
-// Would be nice to add handling of error 429 (Too Many Requests) with exponential backoff, but for now, we will just retry a fixed number of times with a fixed delay only for GET.
+// Base for REST API calls with retry logic.
+// 429 is retried for all methods (delay from numeric Retry-After if sane, else linear backoff, plus jitter).
+// Other retriable codes (408, 502, 503, 504) and transient exceptions are retried only for GET.
 public class RestBase {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestBase.class);
@@ -31,8 +34,10 @@ public class RestBase {
             .logConfig(logConfig().blacklistHeader("PRIVATE-TOKEN"));
 
     private static final CompositeConfiguration config = TestConfig.getConfiguration();
-    private final int maxAttempts = config.getInt("GETRetryAttempts", 3);
-    private final long retryBaseDelay = config.getLong("GETRetryBaseDelay", 500);
+    private final int maxAttempts = config.getInt("RetryAttempts", 3);
+    private final long retryBaseDelay = config.getLong("RetryBaseDelay", 500);
+    private final long maxDelay = config.getLong("RetryMaxDelay", 60000);
+    private final long maxJitter = config.getLong("RetryMaxJitter", 200);
 
     public RestBase(RequestSpecification reqSpec){
         this.reqSpec = reqSpec;
@@ -47,40 +52,67 @@ public class RestBase {
     }
 
     public Response getInternal(String URI, Map<String, ?> queryParams) {
+        return execute("GET", URI, () -> authenticatedRequest().queryParams(queryParams).when().get(URI));
+    }
+
+    public Response postInternal(Object JSON, String URI) {
+        return execute("POST", URI, () -> authenticatedRequest().body(JSON).when().post(URI));
+    }
+
+    public Response putInternal(Object JSON, String URI) {
+        return execute("PUT", URI, () -> authenticatedRequest().body(JSON).when().put(URI));
+    }
+
+    public Response deleteInternal(String URI) {
+        return execute("DELETE", URI, () -> authenticatedRequest().when().delete(URI));
+    }
+
+    private Response execute(String method, String URI, Supplier<Response> request) {
+        boolean isGet = "GET".equals(method);
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
-                LOGGER.info("Sending GET request on {} (attempt {}/{})", URI, attempt, maxAttempts);
-                Response response = authenticatedRequest().queryParams(queryParams).when().get(URI);
+                LOGGER.info("Sending {} request on {} (attempt {}/{})", method, URI, attempt, maxAttempts);
+                Response response = request.get();
+                int status = response.getStatusCode();
 
-                if (!needRetry(response.getStatusCode()) || attempt == maxAttempts) {
+                boolean retriable = status == 429 || (isGet && needRetry(status));
+                if (!retriable || attempt == maxAttempts) {
                     return response;
                 }
 
-                LOGGER.warn("GET request to {} returned status code {}. Retrying in {} ms (attempt {}/{})", URI, response.getStatusCode(), retryBaseDelay * attempt, attempt + 1, maxAttempts);
-                sleep(retryBaseDelay * attempt);
-
+                long delay = calculateDelay(response, attempt);
+                LOGGER.warn("{} request to {} returned status code {}. Retrying in {} ms (attempt {}/{})", method, URI, status, delay, attempt + 1, maxAttempts);
+                sleep(delay);
             } catch (Exception e) {
-                if (attempt == maxAttempts || !isRetryableException(e)) {
+                if (!isGet || attempt == maxAttempts || !isRetryableException(e)) {
                     throw new RuntimeException(e);
                 }
-
-                LOGGER.error("GET request to {} failed with exception: {}. Retrying in {} ms (attempt {}/{})", URI, e.getMessage(), retryBaseDelay * attempt, attempt + 1, maxAttempts);
-                sleep(retryBaseDelay * attempt);
+                long delay = withJitter(Math.min(retryBaseDelay * attempt, maxDelay));
+                LOGGER.error("GET request to {} failed with exception: {}. Retrying in {} ms (attempt {}/{})", URI, e.getMessage(), delay, attempt + 1, maxAttempts);
+                sleep(delay);
             }
         }
         throw new IllegalStateException("Unexpected end of retry loop");
     }
 
-    public Response postInternal(Object JSON, String URI) {
-        return authenticatedRequest().body(JSON).when().post(URI);
+    private long calculateDelay(Response response, int attempt) {
+        long delay = Math.min(retryBaseDelay * attempt, maxDelay);
+        String retryAfter = response.getHeader("Retry-After");
+        if (retryAfter != null) {
+            try {
+                long seconds = Long.parseLong(retryAfter.trim());
+                if (seconds > 0 && seconds <= maxDelay / 1000) {
+                    delay = seconds * 1000;
+                }
+            } catch (NumberFormatException ignored) {
+                // fall back to backoff
+            }
+        }
+        return withJitter(delay);
     }
 
-    public Response putInternal(Object JSON, String URI) {
-        return authenticatedRequest().body(JSON).when().put(URI);
-    }
-
-    public Response deleteInternal(String URI) {
-        return authenticatedRequest().when().delete(URI);
+    private long withJitter(long delay) {
+        return maxJitter > 0 ? delay + ThreadLocalRandom.current().nextLong(maxJitter + 1) : delay;
     }
 
     static boolean isSuccess(int statusCode) {
@@ -95,7 +127,6 @@ public class RestBase {
 
     private static boolean needRetry(int statusCode) {
         return statusCode == 408 // Request Timeout
-                || statusCode == 429 // Too Many Requests
                 || statusCode == 502 // Bad Gateway
                 || statusCode == 503 // Service Unavailable
                 || statusCode == 504; // Gateway Timeout

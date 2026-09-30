@@ -3,18 +3,25 @@ package com.gitlab.issues.tests;
 import com.gitlab.issues.model.Issue;
 import com.gitlab.issues.model.IssueCreateRequest;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.getIssues;
+import static com.gitlab.issues.base.IssuesAPI.getIssuesRaw;
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class ListIssuesPaginationTest extends BaseTest {
+class ListIssuesPaginationTest extends BaseTest {
 
     /*
         Tests for getting list of project issues with focus on pagination, both positive and negative scenarios.
@@ -24,7 +31,7 @@ public class ListIssuesPaginationTest extends BaseTest {
     private static final int PAGE_SIZE = 2;
     private static final int PAGINATION_ISSUE_COUNT = 7; //Important to have number of issues not divisible by PAGE_SIZE to test last page behavior
 
-    private static final List<Long> paginationIssueIids = new ArrayList<>();
+    private static final List<Long> PAGINATION_ISSUE_IIDS = new ArrayList<>();
     private static String paginationSearchText;
 
 
@@ -35,14 +42,14 @@ public class ListIssuesPaginationTest extends BaseTest {
         // Create multiple issues for pagination testing
         for (int i = 1; i <= PAGINATION_ISSUE_COUNT; i++) {
             Issue created = createIssue(new IssueCreateRequest(paginationSearchText + "-issue-" + i));
-            paginationIssueIids.add(created.iid());
+            PAGINATION_ISSUE_IIDS.add(created.iid());
         }
     }
 
     @AfterAll
     static void deletePaginationTestData() {
         // Clean up the created issues after tests
-        for(Long iid : paginationIssueIids) {
+        for (Long iid : PAGINATION_ISSUE_IIDS) {
             deleteIssue(iid);
         }
     }
@@ -125,7 +132,7 @@ public class ListIssuesPaginationTest extends BaseTest {
         // using order_by and sort to ensure consistent ordering of issues across pages
         // Loop through pages until all issues
         //First check pages which has PAGE_SIZE issues
-        for (int page = 1; page <= PAGINATION_ISSUE_COUNT/PAGE_SIZE; page++) {
+        for (int page = 1; page <= PAGINATION_ISSUE_COUNT / PAGE_SIZE; page++) {
             List<Issue> issues = getIssues(Map.of(
                     "search", paginationSearchText,
                     "per_page", PAGE_SIZE,
@@ -144,7 +151,7 @@ public class ListIssuesPaginationTest extends BaseTest {
         List<Issue> issues = getIssues(Map.of(
                 "search", paginationSearchText,
                 "per_page", PAGE_SIZE,
-                "page", PAGINATION_ISSUE_COUNT/PAGE_SIZE + 1,
+                "page", PAGINATION_ISSUE_COUNT / PAGE_SIZE + 1,
                 "order_by", "created_at",
                 "sort", "asc"
         ));
@@ -161,7 +168,7 @@ public class ListIssuesPaginationTest extends BaseTest {
         //Check that all the created issues are returned across all pages
         assertThat(returnedIids)
                 .doesNotHaveDuplicates()
-                .containsExactlyInAnyOrderElementsOf(paginationIssueIids);
+                .containsExactlyInAnyOrderElementsOf(PAGINATION_ISSUE_IIDS);
     }
 
     @Test
@@ -207,7 +214,7 @@ public class ListIssuesPaginationTest extends BaseTest {
 
         //check that the issues returned are matching the search text
         for (Issue issue : issues) {
-            assertThat(issue.iid()).isIn(paginationIssueIids);
+            assertThat(issue.iid()).isIn(PAGINATION_ISSUE_IIDS);
         }
 
     }
@@ -252,7 +259,7 @@ public class ListIssuesPaginationTest extends BaseTest {
 
         //check that the issues returned are matching the search text
         for (Issue issue : issues) {
-            assertThat(issue.iid()).isIn(paginationIssueIids);
+            assertThat(issue.iid()).isIn(PAGINATION_ISSUE_IIDS);
         }
     }
 
@@ -272,7 +279,7 @@ public class ListIssuesPaginationTest extends BaseTest {
 
         //check that the issues returned are matching the search text
         for (Issue issue : issues) {
-            assertThat(issue.iid()).isIn(paginationIssueIids);
+            assertThat(issue.iid()).isIn(PAGINATION_ISSUE_IIDS);
         }
     }
 

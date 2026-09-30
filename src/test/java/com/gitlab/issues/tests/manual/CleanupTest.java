@@ -9,10 +9,11 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.getIssues;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class CleanupTest extends BaseTest {
+class CleanupTest extends BaseTest {
 
 
     // This test is intended to be run manually to reset the project state by deleting all issues created (and not cleaned) by tests.
@@ -31,7 +32,8 @@ public class CleanupTest extends BaseTest {
         int currentPage = 1;
         int iterationCount = 0;
 
-        while (iterationCount++ < maxIterations) {
+        while (iterationCount < maxIterations) {
+            iterationCount++;
             List<Issue> currentPageIssues = getIssues(Map.of(
                     "search", TEST_ISSUE_PREFIX,
                     "page", currentPage,
@@ -78,7 +80,7 @@ public class CleanupTest extends BaseTest {
 
         assertThat(iterationCount)
                 .as("Cleanup should finish before reaching the iteration limit")
-                .isLessThanOrEqualTo(maxIterations);
+                .isLessThan(maxIterations);
     }
 
 }

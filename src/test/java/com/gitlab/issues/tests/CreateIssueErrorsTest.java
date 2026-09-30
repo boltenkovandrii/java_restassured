@@ -13,12 +13,16 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.createIssueRaw;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
+import static com.gitlab.issues.base.IssuesAPI.projectIssuesUrl;
+import static com.gitlab.issues.base.IssuesAPI.getRestBase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class CreateIssueErrorsTest extends BaseTest {
+class CreateIssueErrorsTest extends BaseTest {
 
     /*
         Basic tests for issue creation logic with focus on error\negative scenarios
@@ -372,7 +376,7 @@ public class CreateIssueErrorsTest extends BaseTest {
         Response response = getRestBase().postInternal(requestBody, projectIssuesUrl(PROJECT_ID));
 
         // check that issue is created correctly with due_date set to null
-        assertThat(response.statusCode()).as("Response code should be 201, but was "+ response.statusCode()).isEqualTo(201);
+        assertThat(response.statusCode()).as("Response code should be 201, but was " + response.statusCode()).isEqualTo(201);
         Issue created = response.as(Issue.class);
         assertThat(created).as("Created issue should not be null").isNotNull();
         assertThat(created.dueDate()).as("Created issue due_date should be null").isNull();
@@ -385,13 +389,15 @@ public class CreateIssueErrorsTest extends BaseTest {
 
     @Tag("WIP") // FINDING-4 Handling of invalid  (negative or too big) iid's in create request is incorrect.  You receive: "message": "500 Internal Server Error".
     // But even worse - issue is created and it breaks the system - you can't view issues in UI anymore and GetIssues request is also returning 500 error.
-    // Good news is that the issue can be deleted via API and then everything works again (you will receive another 500 error, but issue will be deleted). This test is marked as WIP until the issue is fixed.
+    // Good news is that the issue can be deleted via API and then everything works again (you will receive another 500 error, but issue will be deleted).
+    // This test is marked as WIP until the issue is fixed.
     @ParameterizedTest
     @DisplayName("CreateErrors21: Attempt to create issue with invalid integer iid's (Requires Admin rights)")
     @ValueSource(longs = {-1, -999, Long.MAX_VALUE})
     void createIssueWithInvalidIidTest(long invalidIid) {
 
-//        deleteIssue(invalidIid); // If you have run this test accidentally, and you project is broken, uncomment this line and run it again to delete the issues with invalid iid and restore the project to working state.
+        // If you have run this test accidentally, and you project is broken, uncomment this line and run it again to delete the issues with invalid iid and restore the project to working state.
+//        deleteIssue(invalidIid);
 
         // Prepare and send request to create an issue with an invalid iid.
         IssueCreateRequest createRequest = new IssueCreateRequest(generateUniqueIssueTitle("Invalid iid test"))
@@ -473,7 +479,7 @@ public class CreateIssueErrorsTest extends BaseTest {
         Response response = getRestBase().postInternal(requestBody, projectIssuesUrl(PROJECT_ID));
 
         // check that issue is created correctly with empty milestone
-        assertThat(response.statusCode()).as("Response code should be 201, but was "+ response.statusCode()).isEqualTo(201);
+        assertThat(response.statusCode()).as("Response code should be 201, but was " + response.statusCode()).isEqualTo(201);
         Issue created = response.as(Issue.class);
         assertThat(created).as("Created issue should not be null").isNotNull();
         assertThat(created.milestone()).as("Created issue milestone should be null").isNull();
@@ -548,7 +554,7 @@ public class CreateIssueErrorsTest extends BaseTest {
         Response response = getRestBase().postInternal(requestBody, projectIssuesUrl(PROJECT_ID));
 
         // Check that issue is created correctly with start_date set to null
-        assertThat(response.statusCode()).as("Response code should be 201, but was "+ response.statusCode()).isEqualTo(201);
+        assertThat(response.statusCode()).as("Response code should be 201, but was " + response.statusCode()).isEqualTo(201);
         Issue created = response.as(Issue.class);
         assertThat(created).as("Created issue should not be null").isNotNull();
         assertThat(created.startDate()).as("Created issue start_date should be null").isNull();
@@ -568,7 +574,7 @@ public class CreateIssueErrorsTest extends BaseTest {
         Response response = getRestBase().postInternal(requestBody, projectIssuesUrl(PROJECT_ID));
 
         // Check that issue is created correctly with start_date set to null
-        assertThat(response.statusCode()).as("Response code should be 201, but was "+ response.statusCode()).isEqualTo(201);
+        assertThat(response.statusCode()).as("Response code should be 201, but was " + response.statusCode()).isEqualTo(201);
         Issue created = response.as(Issue.class);
         assertThat(created).as("Created issue should not be null").isNotNull();
         assertThat(created.startDate()).as("Created issue start_date should be null").isNull();
@@ -588,7 +594,7 @@ public class CreateIssueErrorsTest extends BaseTest {
         Response response = getRestBase().postInternal(requestBody, projectIssuesUrl(PROJECT_ID));
 
         // Check that issue is created correctly with title set to string representation of the number
-        assertThat(response.statusCode()).as("Response code should be 201, but was "+ response.statusCode()).isEqualTo(201);
+        assertThat(response.statusCode()).as("Response code should be 201, but was " + response.statusCode()).isEqualTo(201);
         Issue created = response.as(Issue.class);
         assertThat(created).as("Created issue should not be null").isNotNull();
         assertThat(created.title()).as("Created issue title should be string representation of the number").isEqualTo("12345");

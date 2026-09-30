@@ -13,11 +13,17 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.Map;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
+import static com.gitlab.issues.base.IssuesAPI.getIssue;
+import static com.gitlab.issues.base.IssuesAPI.getRestBase;
+import static com.gitlab.issues.base.IssuesAPI.projectIssuesUrl;
+import static com.gitlab.issues.base.IssuesAPI.updateIssue;
+import static com.gitlab.issues.base.IssuesAPI.updateIssueRaw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class UpdateIssueErrorsTest extends BaseTest {
+class UpdateIssueErrorsTest extends BaseTest {
 
     /*
         Basic tests for issue update logic with focus on error\negative scenarios
@@ -148,7 +154,7 @@ public class UpdateIssueErrorsTest extends BaseTest {
         Response response = getRestBase().putInternal(body, projectIssuesUrl(PROJECT_ID) + "/" + created.iid());
 
         // check response - non-string labels are ignored, and the issue is updated with no labels added
-        assertThat(response.statusCode()).as("Response code should be 200, but was "+ response.statusCode()).isEqualTo(200);
+        assertThat(response.statusCode()).as("Response code should be 200, but was " + response.statusCode()).isEqualTo(200);
         Issue updated = response.as(Issue.class);
         assertThat(updated).as("Created issue should not be null").isNotNull();
         assertThat(updated.labels()).as("Labels should be empty").isEmpty();
@@ -186,7 +192,7 @@ public class UpdateIssueErrorsTest extends BaseTest {
         Response response = getRestBase().putInternal(body, projectIssuesUrl(PROJECT_ID) + "/" + created.iid());
 
         // check response - the invalid assignee_ids are ignored, and the issue is updated with no assignee added
-        assertThat(response.statusCode()).as("Response code should be 200, but was "+ response.statusCode()).isEqualTo(200);
+        assertThat(response.statusCode()).as("Response code should be 200, but was " + response.statusCode()).isEqualTo(200);
         Issue updated = response.as(Issue.class);
         assertThat(updated).as("Created issue should not be null").isNotNull();
         assertThat(updated.assignees()).as("Assignees should be empty").isEmpty();
@@ -373,7 +379,8 @@ public class UpdateIssueErrorsTest extends BaseTest {
     }
 
     @Test
-    @Tag("WIP") // FINDING-6 sending non-string labels in update request is accepted by GitLab API, but request is not ignored and actually updates the issue labels to an empty list. This is unexpected behavior and should be investigated further.
+    @Tag("WIP") // FINDING-6 sending non-string labels in update request is accepted by GitLab API, but request is not ignored and actually updates the issue labels to an empty list.
+    // This is unexpected behavior and should be investigated further.
     @DisplayName("UpdateErrors19: Update issue with non-string labels")
     void updateIssueLabelsWrongTypeTest() {
         // Create an issue to update
@@ -385,7 +392,7 @@ public class UpdateIssueErrorsTest extends BaseTest {
         Response response = getRestBase().putInternal(body, projectIssuesUrl(PROJECT_ID) + "/" + created.iid());
 
         // check response
-        assertThat(response.statusCode()).as("Response code should be 200, but was "+ response.statusCode()).isEqualTo(200);
+        assertThat(response.statusCode()).as("Response code should be 200, but was " + response.statusCode()).isEqualTo(200);
         Issue updated = response.as(Issue.class);
         assertThat(updated).as("Created issue should not be null").isNotNull();
         assertThat(updated.labels()).as("Labels should not be updated").containsExactlyInAnyOrder("initial-label");
@@ -433,7 +440,7 @@ public class UpdateIssueErrorsTest extends BaseTest {
         Response response = getRestBase().putInternal(body, projectIssuesUrl(PROJECT_ID) + "/" + created.iid());
 
         // check response - non-string remove_labels are ignored, and the issue is updated with no labels removed
-        assertThat(response.statusCode()).as("Response code should be 200, but was "+ response.statusCode()).isEqualTo(200);
+        assertThat(response.statusCode()).as("Response code should be 200, but was " + response.statusCode()).isEqualTo(200);
         Issue updated = response.as(Issue.class);
         assertThat(updated).as("Created issue should not be null").isNotNull();
         assertThat(updated.labels()).as("Labels should not be updated").containsExactlyInAnyOrder("initial-label");

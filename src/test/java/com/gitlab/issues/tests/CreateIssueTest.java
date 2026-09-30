@@ -12,13 +12,19 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.getIssue;
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.createIssueRaw;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
+import static com.gitlab.issues.base.IssuesAPI.projectIssuesUrl;
+import static com.gitlab.issues.base.IssuesAPI.getRestBase;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class CreateIssueTest extends BaseTest {
+class CreateIssueTest extends BaseTest {
 
     /*
         Basic tests for issue creation logic with focus on happy path.
@@ -75,7 +81,7 @@ public class CreateIssueTest extends BaseTest {
         assertIssueMatchesRequest(created, createRequest);
         assertThat(created.iid()).isEqualTo(createRequest.getIid());
         assertThat(created.milestone()).isNull(); //just checking that field exists. covers both milestone and milestoneId. No verification for milestone\milestoneId - require project configuration
-        assertThat(created.severity()).isEqualTo(createRequest.getSeverity().toUpperCase()); // stored in UPPERCASE in GitLab
+        assertThat(created.severity()).isEqualTo(createRequest.getSeverity().toUpperCase(Locale.ENGLISH)); // stored in UPPERCASE in GitLab
         // no verification for discussion_to_resolve - require project configuration alongside with merge_request_to_resolve_discussions_of
         // no verification for merge_request_to_resolve_discussions_of - require project configuration
 
@@ -86,7 +92,7 @@ public class CreateIssueTest extends BaseTest {
         assertIssueMatchesRequest(retrieved, createRequest);
         assertThat(retrieved.iid()).isEqualTo(createRequest.getIid());
         assertThat(retrieved.milestone()).isNull(); //just checking that field exists. covers both milestone and milestoneId. No verification for milestone\milestoneId - require project configuration
-        assertThat(retrieved.severity()).isEqualTo(createRequest.getSeverity().toUpperCase()); // stored in UPPERCASE in GitLab
+        assertThat(retrieved.severity()).isEqualTo(createRequest.getSeverity().toUpperCase(Locale.ENGLISH)); // stored in UPPERCASE in GitLab
         // no verification for discussion_to_resolve - require project configuration alongside with merge_request_to_resolve_discussions_of
         // no verification for merge_request_to_resolve_discussions_of - require project configuration
 
@@ -333,7 +339,7 @@ public class CreateIssueTest extends BaseTest {
 
         // Check that issue creation succeeds and the severity field is set correctly.
         assertThat(created).as("Created issue should not be null").isNotNull();
-        assertThat(created.severity()).isEqualTo(severity.toUpperCase()); // GitLab stores severity in uppercase
+        assertThat(created.severity()).isEqualTo(severity.toUpperCase(Locale.ENGLISH)); // GitLab stores severity in uppercase
 
         // Clean up
         deleteIssue(created.iid());

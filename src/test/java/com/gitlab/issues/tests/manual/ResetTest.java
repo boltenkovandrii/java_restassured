@@ -13,7 +13,7 @@ import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
 import static com.gitlab.issues.base.IssuesAPI.getIssues;
 import static org.assertj.core.api.Fail.fail;
 
-public class ResetTest extends BaseTest {
+class ResetTest extends BaseTest {
 
     // This test is intended to be run manually to reset the project state by deleting all issues.
     // DANGEROUS: Never use in environment containing any useful data.

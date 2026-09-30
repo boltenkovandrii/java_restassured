@@ -86,4 +86,4 @@ public record Issue(
         
         @JsonProperty("service_desk_reply_to")
         String serviceDeskReplyTo
-) {}
+) { }

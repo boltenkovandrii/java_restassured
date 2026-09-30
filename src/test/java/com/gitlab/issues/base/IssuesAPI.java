@@ -16,13 +16,14 @@ import java.util.Map;
 //class for business-level APIs
 public class IssuesAPI {
 
-    private static final CompositeConfiguration config = TestConfig.getConfiguration();
-    private static final long PROJECT_ID = config.getLong("PROJECT_ID");
+    private static final CompositeConfiguration CONFIG = TestConfig.getConfiguration();
+
+    private static final long PROJECT_ID = CONFIG.getLong("PROJECT_ID");
 
     private static final String PROJECT_ISSUES_URL = "/api/v4/projects/";
 
-    private static final RestBase restBase = new RestBase(new RequestSpecBuilder()
-            .setBaseUri(config.getString("GITLAB_BASE_URL"))
+    private static final RestBase REST_BASE = new RestBase(new RequestSpecBuilder()
+            .setBaseUri(CONFIG.getString("GITLAB_BASE_URL"))
             .setContentType(ContentType.JSON)
             .addFilter(new AllureRestAssured())
             .build());
@@ -50,11 +51,11 @@ public class IssuesAPI {
     }
 
     public static Response getIssuesRaw(long projectId, Map<String, ?> queryParams) {
-        return restBase.getInternal(projectIssuesUrl(projectId), queryParams);
+        return REST_BASE.getInternal(projectIssuesUrl(projectId), queryParams);
     }
 
     public static Response getIssuesRaw(String projectId, Map<String, ?> queryParams) {
-        return restBase.getInternal(projectIssuesUrl(projectId), queryParams);
+        return REST_BASE.getInternal(projectIssuesUrl(projectId), queryParams);
     }
 
 
@@ -72,11 +73,11 @@ public class IssuesAPI {
     }
 
     public static Response getIssueRaw(long projectId, long issueIid) {
-        return restBase.getInternal(projectIssuesUrl(projectId) + "/" + issueIid);
+        return REST_BASE.getInternal(projectIssuesUrl(projectId) + "/" + issueIid);
     }
 
     public static Response getIssueRaw(String projectId, long issueIid) {
-        return restBase.getInternal(projectIssuesUrl(projectId) + "/" + issueIid);
+        return REST_BASE.getInternal(projectIssuesUrl(projectId) + "/" + issueIid);
     }
 
 
@@ -93,11 +94,11 @@ public class IssuesAPI {
     }
 
     public static Response createIssueRaw(long projectId, IssueCreateRequest request) {
-        return restBase.postInternal(request, projectIssuesUrl(projectId));
+        return REST_BASE.postInternal(request, projectIssuesUrl(projectId));
     }
 
     public static Response createIssueRaw(String projectId, IssueCreateRequest request) {
-        return restBase.postInternal(request, projectIssuesUrl(projectId));
+        return REST_BASE.postInternal(request, projectIssuesUrl(projectId));
     }
 
 
@@ -114,11 +115,11 @@ public class IssuesAPI {
     }
 
     public static Response updateIssueRaw(long projectId, long issueIid, IssueUpdateRequest request) {
-        return restBase.putInternal(request, projectIssuesUrl(projectId) + "/" + issueIid);
+        return REST_BASE.putInternal(request, projectIssuesUrl(projectId) + "/" + issueIid);
     }
 
     public static Response updateIssueRaw(String projectId, long issueIid, IssueUpdateRequest request) {
-        return restBase.putInternal(request, projectIssuesUrl(projectId) + "/" + issueIid);
+        return REST_BASE.putInternal(request, projectIssuesUrl(projectId) + "/" + issueIid);
     }
 
 
@@ -134,11 +135,11 @@ public class IssuesAPI {
     }
 
     public static Response deleteIssueRaw(long projectId, long issueIid) {
-        return restBase.deleteInternal(projectIssuesUrl(projectId) + "/" + issueIid);
+        return REST_BASE.deleteInternal(projectIssuesUrl(projectId) + "/" + issueIid);
     }
 
     public static Response deleteIssueRaw(String projectId, long issueIid) {
-        return restBase.deleteInternal(projectIssuesUrl(projectId) + "/" + issueIid);
+        return REST_BASE.deleteInternal(projectIssuesUrl(projectId) + "/" + issueIid);
     }
 
 
@@ -153,6 +154,6 @@ public class IssuesAPI {
     }
 
     public static RestBase getRestBase() {
-        return restBase;
+        return REST_BASE;
     }
 }

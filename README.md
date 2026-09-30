@@ -1,3 +1,15 @@
+# Java + RestAssured Automation Framework
+
+## Overview
+
+This repository contains an automation framework built with Java and RestAssured
+
+- **AUT**: Public GitLab project
+- **Scope**: CRUD operations of GitLab Issues API: https://docs.gitlab.com/api/issues/
+- **Reporting**: Allure
+- **Test execution**: Maven, GitHub Actions
+- **Test data**: Test project is expected to be configured with a single user with admin rights. The user ID and related parameters are provided through configuration and are used where a valid user ID is required, for example when assigning an issue.
+
 ## Project setup
 
 ### Prerequisites

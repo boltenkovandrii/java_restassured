@@ -14,7 +14,12 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.getIssue;
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.createIssueRaw;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
+import static com.gitlab.issues.base.IssuesAPI.projectIssuesUrl;
+import static com.gitlab.issues.base.IssuesAPI.getRestBase;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")

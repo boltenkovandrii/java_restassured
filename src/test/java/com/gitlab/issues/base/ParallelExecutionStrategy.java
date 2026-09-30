@@ -20,12 +20,12 @@ public class ParallelExecutionStrategy implements ParallelExecutionConfiguration
 
             @Override
             public int getMaxPoolSize() {
-                return TestConfig.getConfiguration().getInt("threads",1);
+                return TestConfig.getConfiguration().getInt("threads", 1);
             }
 
             @Override
             public int getCorePoolSize() {
-                return TestConfig.getConfiguration().getInt("threads",1);
+                return TestConfig.getConfiguration().getInt("threads", 1);
             }
 
             @Override

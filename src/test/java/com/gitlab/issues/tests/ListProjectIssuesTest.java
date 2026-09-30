@@ -17,7 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.getIssues;
+import static com.gitlab.issues.base.IssuesAPI.getIssuesRaw;
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.updateIssue;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
@@ -316,7 +320,7 @@ public class ListProjectIssuesTest extends BaseTest {
         String includedLabel = "included" + System.currentTimeMillis();
         String excludedLabel = "excluded" + System.currentTimeMillis();
         Issue excluded = createIssue(new IssueCreateRequest(generateUniqueIssueTitle("Excluded issue"))
-                        .setLabels(excludedLabel+","+includedLabel));
+                        .setLabels(excludedLabel + "," + includedLabel));
         Issue included = createIssue(new IssueCreateRequest(generateUniqueIssueTitle("Included issue"))
                 .setLabels(includedLabel));
 
@@ -627,7 +631,7 @@ public class ListProjectIssuesTest extends BaseTest {
         //check response status code
         assertThat(response.statusCode()).isEqualTo(200);
         // Verify that the returned issues list is not empty
-        List<Issue> issues =response.jsonPath().getList("", Issue.class);
+        List<Issue> issues = response.jsonPath().getList("", Issue.class);
         assertThat(issues).as("Check that result is not empty").isNotEmpty();
 
         // Cleanup

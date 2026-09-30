@@ -33,45 +33,45 @@ public class RestBase {
             .httpClient(HttpClientConfig.httpClientConfig())
             .logConfig(logConfig().blacklistHeader("PRIVATE-TOKEN"));
 
-    private static final CompositeConfiguration config = TestConfig.getConfiguration();
-    private final int maxAttempts = config.getInt("RetryAttempts", 3);
-    private final long retryBaseDelay = config.getLong("RetryBaseDelay", 500);
-    private final long maxDelay = config.getLong("RetryMaxDelay", 60000);
-    private final long maxJitter = config.getLong("RetryMaxJitter", 200);
+    private static final CompositeConfiguration CONFIG = TestConfig.getConfiguration();
+    private final int maxAttempts = CONFIG.getInt("RetryAttempts", 3);
+    private final long retryBaseDelay = CONFIG.getLong("RetryBaseDelay", 500);
+    private final long maxDelay = CONFIG.getLong("RetryMaxDelay", 60000);
+    private final long maxJitter = CONFIG.getLong("RetryMaxJitter", 200);
 
-    public RestBase(RequestSpecification reqSpec){
+    public RestBase(RequestSpecification reqSpec) {
         this.reqSpec = reqSpec;
     }
 
     private RequestSpecification authenticatedRequest() {
-        return given().config(rConfig).spec(reqSpec).header("PRIVATE-TOKEN", config.getString("GITLAB_ACCESS_TOKEN")).urlEncodingEnabled(false);
+        return given().config(rConfig).spec(reqSpec).header("PRIVATE-TOKEN", CONFIG.getString("GITLAB_ACCESS_TOKEN")).urlEncodingEnabled(false);
     }
 
-    public Response getInternal(String URI) {
-        return getInternal(URI, Map.of());
+    public Response getInternal(String uri) {
+        return getInternal(uri, Map.of());
     }
 
-    public Response getInternal(String URI, Map<String, ?> queryParams) {
-        return execute("GET", URI, () -> authenticatedRequest().queryParams(queryParams).when().get(URI));
+    public Response getInternal(String uri, Map<String, ?> queryParams) {
+        return execute("GET", uri, () -> authenticatedRequest().queryParams(queryParams).when().get(uri));
     }
 
-    public Response postInternal(Object JSON, String URI) {
-        return execute("POST", URI, () -> authenticatedRequest().body(JSON).when().post(URI));
+    public Response postInternal(Object json, String uri) {
+        return execute("POST", uri, () -> authenticatedRequest().body(json).when().post(uri));
     }
 
-    public Response putInternal(Object JSON, String URI) {
-        return execute("PUT", URI, () -> authenticatedRequest().body(JSON).when().put(URI));
+    public Response putInternal(Object json, String uri) {
+        return execute("PUT", uri, () -> authenticatedRequest().body(json).when().put(uri));
     }
 
-    public Response deleteInternal(String URI) {
-        return execute("DELETE", URI, () -> authenticatedRequest().when().delete(URI));
+    public Response deleteInternal(String uri) {
+        return execute("DELETE", uri, () -> authenticatedRequest().when().delete(uri));
     }
 
-    private Response execute(String method, String URI, Supplier<Response> request) {
+    private Response execute(String method, String uri, Supplier<Response> request) {
         boolean isGet = "GET".equals(method);
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
-                LOGGER.info("Sending {} request on {} (attempt {}/{})", method, URI, attempt, maxAttempts);
+                LOGGER.info("Sending {} request on {} (attempt {}/{})", method, uri, attempt, maxAttempts);
                 Response response = request.get();
                 int status = response.getStatusCode();
 
@@ -81,14 +81,14 @@ public class RestBase {
                 }
 
                 long delay = calculateDelay(response, attempt);
-                LOGGER.warn("{} request to {} returned status code {}. Retrying in {} ms (attempt {}/{})", method, URI, status, delay, attempt + 1, maxAttempts);
+                LOGGER.warn("{} request to {} returned status code {}. Retrying in {} ms (attempt {}/{})", method, uri, status, delay, attempt + 1, maxAttempts);
                 sleep(delay);
             } catch (Exception e) {
                 if (!isGet || attempt == maxAttempts || !isRetryableException(e)) {
                     throw new RuntimeException(e);
                 }
                 long delay = withJitter(Math.min(retryBaseDelay * attempt, maxDelay));
-                LOGGER.error("GET request to {} failed with exception: {}. Retrying in {} ms (attempt {}/{})", URI, e.getMessage(), delay, attempt + 1, maxAttempts);
+                LOGGER.error("GET request to {} failed with exception: {}. Retrying in {} ms (attempt {}/{})", uri, e.getMessage(), delay, attempt + 1, maxAttempts);
                 sleep(delay);
             }
         }

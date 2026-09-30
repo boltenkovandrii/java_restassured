@@ -19,19 +19,19 @@ import static com.gitlab.issues.base.IssuesAPI.getIssues;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class BaseTest {
-    private static final CompositeConfiguration config = TestConfig.getConfiguration();
-    protected static final String TEST_ISSUE_PREFIX = config.getString("TEST_ISSUE_PREFIX");
-    protected static final long PROJECT_ID = config.getLong("PROJECT_ID");
-    protected static final long USER_ID = config.getLong("USER_ID");
-    protected static final String PROJECT_PATH = config.getString("PROJECT_PATH");
-    protected static final String USER_NAME = config.getString("USER_NAME");
+    private static final CompositeConfiguration CONFIG = TestConfig.getConfiguration();
+    protected static final String TEST_ISSUE_PREFIX = CONFIG.getString("TEST_ISSUE_PREFIX");
+    protected static final long PROJECT_ID = CONFIG.getLong("PROJECT_ID");
+    protected static final long USER_ID = CONFIG.getLong("USER_ID");
+    protected static final String PROJECT_PATH = CONFIG.getString("PROJECT_PATH");
+    protected static final String USER_NAME = CONFIG.getString("USER_NAME");
 
     protected static final String NOT_FOUND_MESSAGE = "404 Not found";
     protected static final String ISSUE_NOT_FOUND_MESSAGE = "404 Issue Not Found";
 
-    protected static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    protected static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
-    private static  final Random random = new Random();
+    private static  final Random RANDOM = new Random();
 
     protected String generateUniqueIssueTitle(String baseTitle) {
         long timestamp = System.currentTimeMillis();
@@ -56,7 +56,7 @@ public class BaseTest {
 
 
     protected Long getRandomLong() {
-        return random.nextLong(1, Integer.MAX_VALUE); // Use Integer.MAX_VALUE to avoid overflow issues
+        return RANDOM.nextLong(1, Integer.MAX_VALUE); // Use Integer.MAX_VALUE to avoid overflow issues
     }
 
     protected void assertIssueHasDefaultValues(Issue issue, String title) {
@@ -79,7 +79,7 @@ public class BaseTest {
         assertThat(issue.confidential()).isEqualTo(request.getConfidential());
         if (request.getCreatedAt() != null) {
             assertThat(issue.createdAt()).isEqualTo(Instant.parse(request.getCreatedAt()));
-        }else {
+        } else {
             assertThat(issue.createdAt()).isNull();
         }
         assertThat(issue.description()).isEqualTo(request.getDescription());
@@ -89,7 +89,7 @@ public class BaseTest {
         assertThat(issue.startDate()).isEqualTo(LocalDate.parse(request.getStartDate()));
     }
 
-    protected void verifyBasicResponseFields(Issue issue, String status){
+    protected void verifyBasicResponseFields(Issue issue, String status) {
         //Not all generated fields are verified here - just basic ones to ensure that the issue is created correctly.
         assertThat(issue.id()).isPositive();
         assertThat(issue.project_id()).isEqualTo(Math.toIntExact(PROJECT_ID)); //only used for this project

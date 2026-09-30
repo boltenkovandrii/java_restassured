@@ -9,11 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.getIssueRaw;
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssueRaw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class DeleteIssueTest extends BaseTest{
+public class DeleteIssueTest extends BaseTest {
 
     /*
         Basic tests for issue deletion logic both positive and negative scenarios
@@ -70,7 +72,7 @@ public class DeleteIssueTest extends BaseTest{
     @DisplayName("DeleteErrors1: Delete non-existing issue")
     void deleteNonExistingIssueTest() {
         // Attempt to delete an issue with a non-existing IID
-        Response response = deleteIssueRaw(PROJECT_ID,1_000_000L);
+        Response response = deleteIssueRaw(PROJECT_ID, 1_000_000L);
         assertMessage(response, 404, ISSUE_NOT_FOUND_MESSAGE);
 
     }

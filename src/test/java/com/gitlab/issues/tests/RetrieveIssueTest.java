@@ -10,11 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.getIssue;
+import static com.gitlab.issues.base.IssuesAPI.getIssueRaw;
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.updateIssue;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
-public class RetrieveIssueTest extends BaseTest{
+public class RetrieveIssueTest extends BaseTest {
 
     /*
         Basic tests for issue retrieval logic both positive and negative scenarios
@@ -102,7 +106,7 @@ public class RetrieveIssueTest extends BaseTest{
     @DisplayName("RetrieveErrors1: Retrieve non-existing issue")
     void retrieveNonExistingIssueTest() {
         // Try to retrieve an issue with a non-existing IID
-        Response response = getIssueRaw(PROJECT_ID,1_000_000L);
+        Response response = getIssueRaw(PROJECT_ID, 1_000_000L);
         assertMessage(response, 404, NOT_FOUND_MESSAGE);
     }
 
@@ -120,7 +124,7 @@ public class RetrieveIssueTest extends BaseTest{
     @DisplayName("RetrieveErrors3: Retrieve issue with invalid project ID")
     void retrieveIssueInvalidProjectIdTest(long projectId) {
         // Try to retrieve an issue with an invalid project ID
-        Response response = getIssueRaw(String.valueOf(projectId),1);
+        Response response = getIssueRaw(String.valueOf(projectId), 1);
         assertThat(response.statusCode()).isIn(400, 404);
     }
 }

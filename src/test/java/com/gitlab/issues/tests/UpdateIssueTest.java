@@ -15,7 +15,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
+import static com.gitlab.issues.base.IssuesAPI.getIssue;
+import static com.gitlab.issues.base.IssuesAPI.getRestBase;
+import static com.gitlab.issues.base.IssuesAPI.projectIssuesUrl;
+import static com.gitlab.issues.base.IssuesAPI.updateIssue;
+import static com.gitlab.issues.base.IssuesAPI.updateIssueRaw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("UnitTest")
@@ -321,10 +328,10 @@ public class UpdateIssueTest extends BaseTest {
         // clean the issue due date by setting it to empty value
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("due_date", "");
-        Response response = getRestBase().putInternal(requestBody, projectIssuesUrl(PROJECT_ID)+"/"+created.iid());
+        Response response = getRestBase().putInternal(requestBody, projectIssuesUrl(PROJECT_ID) + "/" + created.iid());
 
         // Check that the issue is updated correctly
-        assertThat(response.statusCode()).as("Response code should be 200, but was "+ response.statusCode()).isEqualTo(200);
+        assertThat(response.statusCode()).as("Response code should be 200, but was " + response.statusCode()).isEqualTo(200);
         Issue updated1 = response.as(Issue.class);
         assertThat(updated1.dueDate()).isNull();
 
@@ -563,7 +570,8 @@ public class UpdateIssueTest extends BaseTest {
         String newUpdatedAt = "2024-01-01T12:00:00Z";
         Issue updated = updateIssue(
                 created.iid(),
-                new IssueUpdateRequest().setUpdatedAt(newUpdatedAt).setLabels("updated-at-test")); //we need to set at least one other field in the update request, otherwise GitLab API returns 400 error
+                //we need to set at least one other field in the update request, otherwise GitLab API returns 400 error
+                new IssueUpdateRequest().setUpdatedAt(newUpdatedAt).setLabels("updated-at-test"));
 
 
         // Check that the issue is updated correctly
@@ -617,7 +625,8 @@ public class UpdateIssueTest extends BaseTest {
         assertThat(updated.dueDate()).isEqualTo(LocalDate.parse(dueDate));
         assertThat(updated.startDate()).isEqualTo(LocalDate.parse(startDate));
         assertThat(updated.issueType()).isEqualTo("incident");
-//        assertThat(updated.severity()).isEqualTo("MEDIUM"); // FINDING-5 Looks like you can't change issue type to an incident and set severity in the same update request. Severity remains UNKNOWN for non-incident issues.
+        // FINDING-5 Looks like you can't change issue type to an incident and set severity in the same update request. Severity remains UNKNOWN for non-incident issues.
+//        assertThat(updated.severity()).isEqualTo("MEDIUM");
         assertThat(updated.severity()).isEqualTo("UNKNOWN");
         assertThat(updated.labels())
                 .containsExactlyInAnyOrder("api", "updated", "test");
@@ -632,7 +641,8 @@ public class UpdateIssueTest extends BaseTest {
         assertThat(retrieved.dueDate()).isEqualTo(LocalDate.parse(dueDate));
         assertThat(retrieved.startDate()).isEqualTo(LocalDate.parse(startDate));
         assertThat(retrieved.issueType()).isEqualTo("incident");
-//        assertThat(retrieved.severity()).isEqualTo("MEDIUM");  // FINDING-5 Looks like you can't change issue type to an incident and set severity in the same update request. Severity remains UNKNOWN for non-incident issues.
+        // FINDING-5 Looks like you can't change issue type to an incident and set severity in the same update request. Severity remains UNKNOWN for non-incident issues.
+//        assertThat(retrieved.severity()).isEqualTo("MEDIUM");
         assertThat(retrieved.severity()).isEqualTo("UNKNOWN");
         assertThat(retrieved.labels())
                 .containsExactlyInAnyOrder("api", "updated", "test");

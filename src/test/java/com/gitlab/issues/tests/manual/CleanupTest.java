@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.getIssues;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class CleanupTest extends BaseTest {

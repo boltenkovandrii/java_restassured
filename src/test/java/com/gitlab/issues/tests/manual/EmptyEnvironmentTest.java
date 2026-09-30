@@ -11,7 +11,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.gitlab.issues.base.IssuesAPI.*;
+import static com.gitlab.issues.base.IssuesAPI.getIssues;
+import static com.gitlab.issues.base.IssuesAPI.getIssueRaw;
+import static com.gitlab.issues.base.IssuesAPI.createIssue;
+import static com.gitlab.issues.base.IssuesAPI.updateIssueRaw;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssue;
+import static com.gitlab.issues.base.IssuesAPI.deleteIssueRaw;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("EmptyEnvironmentTests")
@@ -75,7 +80,7 @@ public class EmptyEnvironmentTest extends BaseTest {
             assertThat(created.title()).isEqualTo(createRequest.getTitle());
         } finally {
             // Clean up
-            if(created!=null){
+            if (created != null) {
                 deleteIssue(created.iid());
             }
         }

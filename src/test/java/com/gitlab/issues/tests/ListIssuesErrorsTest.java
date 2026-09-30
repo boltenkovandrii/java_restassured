@@ -31,7 +31,7 @@ public class ListIssuesErrorsTest extends BaseTest {
                 PROJECT_ID,
                 Map.of(parameter, "invalid_value"));
 
-        assertError(response, 400, parameter+" does not have a valid value");
+        assertError(response, 400, parameter + " does not have a valid value");
     }
 
     @ParameterizedTest
@@ -43,7 +43,7 @@ public class ListIssuesErrorsTest extends BaseTest {
                 PROJECT_ID,
                 Map.of(parameter, "invalid_value"));
 
-        assertError(response, 400, parameter+" is invalid");
+        assertError(response, 400, parameter + " is invalid");
     }
 
 

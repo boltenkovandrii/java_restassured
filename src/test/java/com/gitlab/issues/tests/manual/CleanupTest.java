@@ -80,7 +80,7 @@ class CleanupTest extends BaseTest {
 
         assertThat(iterationCount)
                 .as("Cleanup should finish before reaching the iteration limit")
-                .isLessThanOrEqualTo(maxIterations);
+                .isLessThan(maxIterations);
     }
 
 }

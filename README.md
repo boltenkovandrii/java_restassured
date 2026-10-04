@@ -33,6 +33,16 @@ The simplest command to run the tests with Maven wrapper (all commands provided 
 This should run the tests and generate an Allure report. See more information about test scopes and runs below.
 
 
+### de quality and formatting
+- Checkstyle is used to enforce code formatting and quality. The configuration is provided in `src/test/resources/checkstyle.xml` file.
+- PMD is used to enforce code quality and detect potential bugs. The configuration is provided in `src/test/resources/pmd.ruleset.xml` file.
+
+Commands for manual run of the quality checks:
+```powershell
+./mvnw checkstyle:check 
+./mvnw pmd:check
+```
+
 ## Limitations and scope:
 
 1. Following API's are covered:

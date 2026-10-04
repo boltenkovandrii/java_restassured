@@ -408,7 +408,7 @@ class UpdateIssueTest extends BaseTest {
         deleteIssue(created.iid());
     }
 
-    //no tests for updating milestone, or milestone_id, as this assignment does not include any milestone setup. In future, it would be nice to add tests for updating milestone, and milestone_id.
+    //no tests for updating milestone, or milestone_id, as the setup does not include any milestone setup. In the future, it would be nice to add tests for updating milestone, and milestone_id.
 
     @Test
     @DisplayName("Update17: Remove selected issue labels")

@@ -53,7 +53,7 @@ Commands for manual run of the quality checks:
    * https://docs.gitlab.com/api/issues/#delete-an-issue
 2. Only Free plan is covered — no Premium or Ultimate logic or related fields in DTO's are covered.
 3. A single user with admin rights is used for testing. The user's ID and related parameters are provided through configuration and is used where a valid user ID is required, for example when assigning an issue. 
-Restrictions and differences related to non-admin user permissions are not covered in this project, as well as scenarios which required multiple users.
+Restrictions and differences related to non-admin user permissions are not covered in this project, as well as scenarios which require multiple users.
 4. Fields that require additional project data are not covered in the create/update tests. This includes `milestoneId`, `milestone`, `merge_request_to_resolve_discussions_of`, and `discussion_to_resolve`, 
 as testing these fields properly would require creating and maintaining additional milestones or merge requests in the test project. The same applies for some specific filtering parameters like my_reaction_emoji.
 5. Simple CI workflow is provided to run the tests on GitHub Actions. PAT token is required to be provided as a secret variable in the repository settings. The workflow can be triggered manually, on commit or by schedule, and it will generate test reports as an artifact.

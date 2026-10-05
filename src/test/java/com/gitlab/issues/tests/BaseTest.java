@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BaseTest {
     private static final CompositeConfiguration CONFIG = TestConfig.getConfiguration();
-    protected static final String TEST_ISSUE_PREFIX = CONFIG.getString("TEST_ISSUE_PREFIX");
     protected static final long PROJECT_ID = CONFIG.getLong("PROJECT_ID");
     protected static final long USER_ID = CONFIG.getLong("USER_ID");
     protected static final String PROJECT_PATH = CONFIG.getString("PROJECT_PATH");
@@ -35,17 +34,9 @@ public class BaseTest {
 
     protected String generateUniqueIssueTitle(String baseTitle) {
         long timestamp = System.currentTimeMillis();
-        return TEST_ISSUE_PREFIX + " " + baseTitle + " " + timestamp + " " + getRandomLong();
+        return baseTitle + " " + timestamp + " " + getRandomLong();
     }
 
-    /*
-    // To use this function we need a unique string in title or description
-    protected void checkIssueIsAbsent(long projectId, String searchQuery) {
-        List<Issue> issues = getIssues(projectId, Map.of("search", searchQuery.replace(" ", "%20")));
-        assertThat(issues).as("Check that issue with title '%s' is absent", searchQuery).isEmpty();
-    }
-
-     */
 
     // To use this function we need a unique string in title or description
     protected void checkIssueIsAbsent(long projectId, String searchQuery) {

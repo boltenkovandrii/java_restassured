@@ -131,7 +131,7 @@ class UpdateIssueTest extends BaseTest {
     }
 
 
-    //Only one user is configured for this assignment, but in the future, would be nice to add a test for assigning multiple users to an issue, and then unassigning them.
+    //Only one user is configured, but it would be useful to add a test for assigning multiple users to an issue, and then unassigning them.
     @Test
     @DisplayName("Update5: Update issue assignee")
     void updateIssueAssigneeTest() {

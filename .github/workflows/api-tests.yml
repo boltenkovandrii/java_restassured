@@ -12,7 +12,6 @@
             - UnitTest
             - EmptyEnvironmentTests
             - Reset
-            - Cleanup
 
         threads:
           description: "Number of parallel test threads"

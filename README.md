@@ -78,6 +78,9 @@ as testing these fields properly would require creating and maintaining addition
 
 # Run tests with specific scope and given number of threads:
 ./mvnw clean test -Dscope=EmptyEnvironmentTests -Dthreads=1; ./mvnw allure:report
+
+# Run tests skipping code quality and formatting checks (useful for debugging):
+./mvnw clean test -"Dcheckstyle.skip=true" -"Dpmd.skip=true";./mvnw allure:report
 ```
 
 GitHub Actions supports manual execution with:
@@ -105,6 +108,16 @@ View report at http://localhost:8080/
 ```bash
 allure serve
 ```
+
+### Cleaning created test data
+
+Normally tests clean up all data created by themselves. However, if tests are interrupted or fail, some data may remain in the test project. This is done intentionally to help with debugging and troubleshooting after test fails.
+To clean up the test project, you can run the `Reset` scope tests, which will delete all the issues created. 
+
+NOTE: This is somewhat discussable choice and in in future could be reworked with try\catch blocks.
+
+
+```powershell 
 
 ## Test Execution Tags
 

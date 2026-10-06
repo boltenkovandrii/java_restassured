@@ -23,7 +23,7 @@ But it is not publicly available so it will not be possible to see created issue
 - Set PROJECT_ID, PROJECT_PATH, USER_NAME and USER_ID `src/test/resources/config.properties`
 - Create file `src/test/resources/gitlab.properties` based on provided sample and store your GitLab personal access token (PAT) in it. 
 <span style="color:#AA2222">**The file is ignored by git and should never be committed to the repository.**</span>
-- For CI runs, create environment variable `GITLAB_ACCESS_TOKEN` with personal access token (Settings-> Secrets and variables-> Actions-> New repository secret).
+- For CI runs, create environment variables `GITLAB_ACCESS_TOKEN` and `EXPIRED_TOKEN` with personal access token (Settings-> Secrets and variables-> Actions-> New repository secret).
 
 ### Test run   
 The simplest command to run the tests with Maven wrapper (all commands provided for Windows environment):
@@ -78,6 +78,9 @@ as testing these fields properly would require creating and maintaining addition
 
 # Run tests with specific scope and given number of threads:
 ./mvnw clean test -Dscope=EmptyEnvironmentTests -Dthreads=1; ./mvnw allure:report
+
+# Run tests skipping code quality and formatting checks (useful for debugging):
+./mvnw clean test -"Dcheckstyle.skip=true" -"Dpmd.skip=true";./mvnw allure:report
 ```
 
 GitHub Actions supports manual execution with:
@@ -105,6 +108,14 @@ View report at http://localhost:8080/
 ```bash
 allure serve
 ```
+
+### Cleaning created test data
+
+Normally tests clean up all data created by themselves. However, if tests are interrupted or fail, some data may remain in the test project. This is done intentionally to help with debugging and troubleshooting after test fails.
+To clean up a dedicated test project, you can run the `Reset` scope tests. **WARNING: This deletes all issues in the configured project, including pre-existing issues not created by these tests. Only run it against a disposable test project.**
+
+NOTE: This is somewhat discussable choice and in in future could be reworked with try\catch blocks.
+
 
 ## Test Execution Tags
 

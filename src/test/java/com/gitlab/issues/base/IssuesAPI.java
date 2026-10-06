@@ -143,6 +143,29 @@ public class IssuesAPI {
     }
 
 
+    ////////////// Requests with custom auth (for auth error tests) ////////////////
+
+    public static Response getIssuesRaw(RestBase.AuthMode mode) {
+        return REST_BASE.getInternal(projectIssuesUrl(PROJECT_ID), Map.of(), mode);
+    }
+
+    public static Response getIssueRaw(long issueIid, RestBase.AuthMode mode) {
+        return REST_BASE.getInternal(projectIssuesUrl(PROJECT_ID) + "/" + issueIid, Map.of(), mode);
+    }
+
+    public static Response createIssueRaw(IssueCreateRequest request, RestBase.AuthMode mode) {
+        return REST_BASE.postInternal(request, projectIssuesUrl(PROJECT_ID), mode);
+    }
+
+    public static Response updateIssueRaw(long issueIid, IssueUpdateRequest request, RestBase.AuthMode mode) {
+        return REST_BASE.putInternal(request, projectIssuesUrl(PROJECT_ID) + "/" + issueIid, mode);
+    }
+
+    public static Response deleteIssueRaw(long issueIid, RestBase.AuthMode mode) {
+        return REST_BASE.deleteInternal(projectIssuesUrl(PROJECT_ID) + "/" + issueIid, mode);
+    }
+
+
     ////////////// Utilities ////////////////
 
     public static String projectIssuesUrl(long projectId) {

@@ -39,12 +39,23 @@ public class RestBase {
     private final long maxDelay = CONFIG.getLong("RetryMaxDelay", 60000);
     private final long maxJitter = CONFIG.getLong("RetryMaxJitter", 200);
 
+    public enum AuthMode { VALID, ABSENT, INVALID, EXPIRED, EMPTY }
+
+
     public RestBase(RequestSpecification reqSpec) {
         this.reqSpec = reqSpec;
     }
 
-    private RequestSpecification authenticatedRequest() {
-        return given().config(rConfig).spec(reqSpec).header("PRIVATE-TOKEN", CONFIG.getString("GITLAB_ACCESS_TOKEN")).urlEncodingEnabled(false);
+
+    private RequestSpecification authenticatedRequest(AuthMode mode) {
+        RequestSpecification spec = given().config(rConfig).spec(reqSpec).urlEncodingEnabled(false);
+        return switch (mode) {
+            case VALID -> spec.header("PRIVATE-TOKEN", CONFIG.getString("GITLAB_ACCESS_TOKEN"));
+            case ABSENT -> spec;
+            case INVALID -> spec.header("PRIVATE-TOKEN", "invalid-token-value");
+            case EXPIRED -> spec.header("PRIVATE-TOKEN", CONFIG.getString("EXPIRED_TOKEN"));
+            case EMPTY -> spec.header("PRIVATE-TOKEN", "");
+        };
     }
 
     public Response getInternal(String uri) {
@@ -52,19 +63,35 @@ public class RestBase {
     }
 
     public Response getInternal(String uri, Map<String, ?> queryParams) {
-        return execute("GET", uri, () -> authenticatedRequest().queryParams(queryParams).when().get(uri));
+        return getInternal(uri, queryParams, AuthMode.VALID);
+    }
+
+    public Response getInternal(String uri, Map<String, ?> queryParams, AuthMode mode) {
+        return execute("GET", uri, () -> authenticatedRequest(mode).queryParams(queryParams).when().get(uri));
     }
 
     public Response postInternal(Object json, String uri) {
-        return execute("POST", uri, () -> authenticatedRequest().body(json).when().post(uri));
+        return postInternal(json, uri, AuthMode.VALID);
+    }
+
+    public Response postInternal(Object json, String uri, AuthMode mode) {
+        return execute("POST", uri, () -> authenticatedRequest(mode).body(json).when().post(uri));
     }
 
     public Response putInternal(Object json, String uri) {
-        return execute("PUT", uri, () -> authenticatedRequest().body(json).when().put(uri));
+        return putInternal(json, uri, AuthMode.VALID);
+    }
+
+    public Response putInternal(Object json, String uri, AuthMode mode) {
+        return execute("PUT", uri, () -> authenticatedRequest(mode).body(json).when().put(uri));
     }
 
     public Response deleteInternal(String uri) {
-        return execute("DELETE", uri, () -> authenticatedRequest().when().delete(uri));
+        return deleteInternal(uri, AuthMode.VALID);
+    }
+
+    public Response deleteInternal(String uri, AuthMode mode) {
+        return execute("DELETE", uri, () -> authenticatedRequest(mode).when().delete(uri));
     }
 
     private Response execute(String method, String uri, Supplier<Response> request) {
